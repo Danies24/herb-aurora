@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground: #ededed;
+  }
+}
+
+/*
+  The new @theme block contains your custom tokens.
+  These are now automatically available as utility classes.
+*/
+@theme {
+  /* Colors */
+  --color-primary: #4b8f29;
+  --color-secondary: #a3c585;
+  --color-accent: #ffd700;
+
+  /* Your existing color scheme variables */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Specific color shades */
+  --color-herb-green-light: #4b8f29;
+  --color-herb-green: #3e7c59;
+  --color-herb-turmeric: #efcf6c;
+  --color-herb-turmeric-dark: #bfa53e;
+  --color-herb-cream: #fcefd5;
+  --color-herb-rose: #e57373;
+  --color-glass: rgba(62, 124, 89, 0.12);
+
+  /* Fonts */
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+
+  /* Screen Breakpoints */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 740px;
+  --breakpoint-desktop: 1025px;
+  --breakpoint-lgDesktop: 1440px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Base layer styles */
+@layer base {
+  body {
+    @apply font-sans;
+  }
+}
