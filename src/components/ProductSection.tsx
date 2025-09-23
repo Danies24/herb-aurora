@@ -8,9 +8,7 @@ import { RootState } from "@/redux/store"; // adjust path to your store
 import { addToCart } from "@/redux/slices/cartSlice";
 import toast from "react-hot-toast";
 import { Product } from "@/types/product";
-
-const CLOUDINARY_BASE =
-  "https://res.cloudinary.com/dc5qdjy55/image/upload/products/";
+import { CLOUDINARY_BASE } from "@/constants/config";
 
 type ProductSectionProps = {
   title: string;

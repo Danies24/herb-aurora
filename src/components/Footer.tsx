@@ -44,7 +44,7 @@ const Footer = () => {
         </div>
         {/* Right : Copyright & Social Media */}
 
-        <div flex flex-col items-start>
+        <div className="flex flex-col items-start">
           <div className="text-sm text-herb-green mt-4">
             © {new Date().getFullYear()} Herb Aurora. All rights reserved.
           </div>
