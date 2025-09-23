@@ -39,16 +39,15 @@ const HamburgerMenu = () => {
   };
 
   const router = useRouter();
-  const loginRequired = false;
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    loginRequired(() => router.push("/cart"));
+    router.push("/cart");
   };
 
   const handleProfileClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    loginRequired(() => router.push("/profile"));
+    router.push("/profile");
   };
 
   return (
@@ -74,13 +73,22 @@ const HamburgerMenu = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/products" className="text-herb-green-light font-medium">
+          <Link
+            href="/products"
+            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+          >
             Products
           </Link>
-          <Link href="/about" className="text-herb-green-light font-medium">
+          <Link
+            href="/about"
+            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+          >
             About
           </Link>
-          <Link href="/contact" className="text-herb-green-light font-medium">
+          <Link
+            href="/contact"
+            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+          >
             Contact
           </Link>
 

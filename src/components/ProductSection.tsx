@@ -1,13 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Product } from "@/constants/products";
-import { useLoginRequired } from "@/hooks/useLoginRequired";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store"; // adjust path to your store
 import { addToCart } from "@/redux/slices/cartSlice";
 import toast from "react-hot-toast";
+import { Product } from "@/types/product";
+
+const CLOUDINARY_BASE =
+  "https://res.cloudinary.com/dc5qdjy55/image/upload/products/";
 
 type ProductSectionProps = {
   title: string;
@@ -23,17 +26,20 @@ const ProductSection = ({
   lazyLoading,
 }: ProductSectionProps) => {
   const router = useRouter();
-  const loginRequired = useLoginRequired();
-  const dispatch = useAppDispatch();
-  const cartItems = useAppSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
 
+  // ✅ Access cart items from Redux
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+
+  // Helper: is product already in cart?
   const isInCart = (productId: string, size: string) => {
     return cartItems.some(
       (item) => item.id === productId && item.size === size
     );
   };
 
-  const handleAddToCart = async (product: Product) => {
+  // Add to cart
+  const handleAddToCart = (product: Product) => {
     try {
       dispatch(
         addToCart({
@@ -58,18 +64,23 @@ const ProductSection = ({
   const handleProductClick = (productId: string) => {
     router.push(`/products/${productId}`);
   };
-
   return (
     <section className="py-16 bg-herb-cream w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-herb-green-light text-center mb-2 font-[var(--font-herbal)]">
+        {/* Section Header */}
+        <h2 className="text-3xl font-bold text-herb-green-light text-center mb-2 [font-family:var(--font-herbal)]">
           {title}
         </h2>
         <p className="text-center text-herb-green-light opacity-80 mb-12">
           {subTitle}
         </p>
 
-        <div className="flex overflow-x-auto gap-4 px-1 py-2 scroll-snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-8 sm:overflow-visible sm:snap-none">
+        {/* Product Grid */}
+        <div
+          className="grid gap-8 p-12 
+             grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 
+             justify-items-center"
+        >
           {products.map((product) => {
             const inCart = isInCart(product.id, product.variants[0].size);
 
@@ -77,17 +88,19 @@ const ProductSection = ({
               <div
                 key={product.id}
                 onClick={() => handleProductClick(product.id)}
-                className="relative bg-white rounded-lg overflow-hidden shadow-md cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg snap-start flex-shrink-0 w-2/3 sm:w-auto"
+                className="relative bg-white rounded-lg overflow-hidden shadow-md cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="relative w-full h-72">
-                  <Image
-                    src={product.images[0]}
+                {/* Product Image */}
+                <div className="relative w-full h-54 flex items-center justify-center">
+                  <img
+                    src={`${CLOUDINARY_BASE}${product.images[0]}`}
                     alt={product.name}
-                    fill
-                    className="object-cover"
+                    className="object-fill h-full w-full"
                     loading={lazyLoading ? "lazy" : "eager"}
                   />
                 </div>
+
+                {/* Product Details */}
                 <div className="p-4">
                   <p className="text-xs font-semibold text-herb-green-light mb-1">
                     #{product.rank} IN {product.category.toUpperCase()}
@@ -112,16 +125,18 @@ const ProductSection = ({
                     </span>
                   </p>
 
+                  {/* CTA Button */}
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      loginRequired(() => {
-                        if (inCart) {
-                          handleGoToBag();
-                        } else {
-                          handleAddToCart(product);
-                        }
-                      });
+
+                      // ✅ If login required (Magic Checkout), check user state
+                      // For now: always allow
+                      if (inCart) {
+                        handleGoToBag();
+                      } else {
+                        handleAddToCart(product);
+                      }
                     }}
                     disabled={inCart}
                     className={`w-full py-3 rounded-lg font-[var(--font-herbal)] transition text-white ${
