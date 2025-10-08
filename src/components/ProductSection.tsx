@@ -17,12 +17,7 @@ type ProductSectionProps = {
   lazyLoading: boolean;
 };
 
-const ProductSection = ({
-  title,
-  subTitle,
-  products,
-  lazyLoading,
-}: ProductSectionProps) => {
+const ProductSection = ({ title, subTitle, products }: ProductSectionProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -86,62 +81,62 @@ const ProductSection = ({
               <div
                 key={product.id}
                 onClick={() => handleProductClick(product.id)}
-                className="relative bg-white rounded-lg overflow-hidden shadow-md cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg"
+                className="bg-white shadow-lg border border-herb-green/20 rounded-2xl overflow-hidden relative transition-transform duration-200 mb-12 sm:mb-4 cursor-pointer flex flex-col min-h-[26rem]"
               >
-                {/* Product Image */}
-                <div className="relative w-full h-54 flex items-center justify-center">
+                {/* Image */}
+                <div className="relative w-full h-58">
                   <img
                     src={`${CLOUDINARY_BASE}${product.images[0]}`}
                     alt={product.name}
                     className="object-fill h-full w-full"
-                    loading={lazyLoading ? "lazy" : "eager"}
                   />
                 </div>
 
-                {/* Product Details */}
-                <div className="p-4">
-                  <p className="text-xs font-semibold text-herb-green-light mb-1">
-                    #{product.rank} IN {product.category.toUpperCase()}
-                  </p>
-                  <h3 className="font-[var(--font-herbal)] text-base text-herb-green-light mb-2">
+                {/* Details */}
+                <div className="p-4 flex flex-col flex-grow">
+                  {product.rank === 2 ? (
+                    <p className="text-xs text-herb-green font-semibold mb-1">
+                      #{product.rank} IN {product.category.toUpperCase()}
+                    </p>
+                  ) : null}
+                  <h2 className="text-l text-herb-green font-semibold mb-1">
                     {product.name}
-                  </h3>
-                  <p className="text-sm text-herb-green-light/80 mb-2">
+                  </h2>
+                  <p className="text-herb-green/80 mb-1 text-sm">
                     {product.benefit}
                   </p>
-                  <p className="text-sm text-herb-green-light/80 mb-2">
-                    {product.variants[0].size}
-                  </p>
-                  <p className="text-base font-semibold text-herb-green-light mb-4">
-                    {product.variants[0].strikedPrice && (
-                      <span className="text-gray-400 line-through mr-2">
+                  <p className="text-base font-semibold text-black mb-3">
+                    <span className="text-black font-bold text-lg mr-2">
+                      ₹{product.variants[0]?.price}
+                    </span>
+                    {product.variants[0]?.strikedPrice && (
+                      <span className="line-through text-gray-400 text-sm ">
                         ₹{product.variants[0].strikedPrice}
                       </span>
                     )}
-                    <span className="text-black font-bold text-lg">
-                      ₹{product.variants[0].price}
+                    <span className="text-herb-green/80 text-sm ml-2">
+                      - {product.variants[0].size}
                     </span>
                   </p>
-
-                  {/* CTA Button */}
+                </div>
+                <div className="p-4 pt-0 mt-auto">
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-
-                      // ✅ If login required (Magic Checkout), check user state
-                      // For now: always allow
                       if (inCart) {
                         handleGoToBag();
                       } else {
                         handleAddToCart(product);
                       }
                     }}
-                    disabled={inCart}
-                    className={`w-full py-3 rounded-lg font-[var(--font-herbal)] transition text-white ${
-                      inCart
-                        ? "bg-herb-green hover:bg-herb-green-light font-bold text-lg"
-                        : "bg-herb-green-light hover:bg-herb-green"
-                    }`}
+                    className={`
+  w-full rounded-lg py-2.5 text-lg font-bold text-white shadow cursor-pointer
+  ${
+    inCart
+      ? "bg-herb-green hover:bg-herb-green-light"
+      : "bg-herb-green-light hover:bg-herb-green"
+  }
+`}
                   >
                     {inCart ? "Go to Bag" : "Add to Cart"}
                   </Button>

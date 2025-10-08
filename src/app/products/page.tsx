@@ -3,7 +3,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import Footer from "@/components/Footer";
 import { Product } from "@/types/product";
 import { CLOUDINARY_BASE } from "@/constants/config";
@@ -135,8 +134,8 @@ const ProductListingPage = () => {
                 </div>
                 <div className="p-4 pt-0 mt-auto">
                   <button
-                    className="w-full bg-herb-green text-white rounded-lg py-2.5 font-semibold shadow 
-                       hover:bg-herb-green-light transition duration-300 cursor-pointer"
+                    className="w-full bg-herb-green-light text-white rounded-lg py-2.5 font-semibold shadow 
+                       hover:bg-herb-green transition duration-300 cursor-pointer"
                   >
                     Add to Cart
                   </button>
