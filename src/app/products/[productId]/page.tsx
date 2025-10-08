@@ -129,7 +129,7 @@ const ProductDetailsPage = () => {
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           {/* Carousel */}
-          <div className="relative h-[70vh] rounded-2xl shadow-xl overflow-hidden">
+          <div className="relative h-[50vh] md:h-[70vh] rounded-2xl shadow-xl overflow-hidden">
             <div
               className="w-full h-full relative overflow-hidden"
               ref={emblaRef}
@@ -143,7 +143,7 @@ const ProductDetailsPage = () => {
                     <img
                       src={`${CLOUDINARY_BASE}${img}`}
                       alt={product.name}
-                      className="object-fill rounded-2xl"
+                      className="w-full h-full object-cover rounded-2xl"
                     />
                   </div>
                 ))}
@@ -183,21 +183,16 @@ const ProductDetailsPage = () => {
           {/* Info */}
           <div className="flex flex-col gap-6 bg-white/50 backdrop-blur-md rounded-2xl shadow-xl p-8 animate-fadeInUp">
             <div>
-              <h1 className="text-3xl font-herbal text-herb-green mb-1">
+              <h1 className="text-xl md:text-3xl font-herbal text-herb-green mb-1">
                 {product.name}
               </h1>
               <p className="italic text-herb-green">{product.target}</p>
             </div>
 
-            <div>
-              <h2 className="text-xl font-herbal text-herb-green">Benefits</h2>
-              <p className="text-herb-green">{product.benefit}</p>
-            </div>
-
             {/* Sizes */}
             <div>
               <h2 className="text-xl font-herbal text-herb-green mb-2">
-                Select Size
+                Select Quantity
               </h2>
               <div className="flex gap-3">
                 {product.variants.map((variant, index) => (
@@ -257,7 +252,10 @@ const ProductDetailsPage = () => {
               </h2>
               <p className="text-herb-green">{product.description}</p>
             </div>
-
+            <div>
+              <h2 className="text-xl font-herbal text-herb-green">Benefits</h2>
+              <p className="text-herb-green">{product.benefit}</p>
+            </div>
             <div>
               <h2 className="text-xl font-herbal text-herb-green">
                 Key Ingredients
