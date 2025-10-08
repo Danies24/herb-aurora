@@ -9,6 +9,7 @@ import { addToCart } from "@/redux/slices/cartSlice";
 import toast from "react-hot-toast";
 import { Product } from "@/types/product";
 import { CLOUDINARY_BASE } from "@/constants/config";
+import { openCart } from "@/redux/slices/uiSlice";
 
 type ProductSectionProps = {
   title: string;
@@ -51,7 +52,7 @@ const ProductSection = ({ title, subTitle, products }: ProductSectionProps) => {
   };
 
   const handleGoToBag = () => {
-    router.push("/cart");
+    dispatch(openCart());
   };
 
   const handleProductClick = (productId: string) => {

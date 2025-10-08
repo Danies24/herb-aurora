@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-
+import CartDrawer from "@/components/CartDrawer";
 import ClientLayout from "@/components/ClientLayout"; // 👈 wrapper for client-only parts
 
 import "@/styles/globals.css";
@@ -28,7 +28,10 @@ export default function RootLayout({
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="afterInteractive"
         />
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout>
+          <CartDrawer />
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

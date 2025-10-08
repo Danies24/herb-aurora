@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
@@ -14,6 +13,7 @@ import { Product } from "@/types/product";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { CLOUDINARY_BASE } from "@/constants/config";
+import { openCart } from "@/redux/slices/uiSlice";
 
 const ProductDetailsPage = () => {
   const params = useParams();
@@ -102,7 +102,8 @@ const ProductDetailsPage = () => {
 
   const handleCartButtonClick = async () => {
     if (isInCart) {
-      router.push("/cart");
+      dispatch(openCart());
+
       return;
     }
     try {

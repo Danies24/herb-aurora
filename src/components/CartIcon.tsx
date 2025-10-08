@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store"; // make sure your store is exported
@@ -11,10 +10,7 @@ const CartIcon = () => {
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <Link
-      href="/cart"
-      className="relative inline-flex items-center justify-center no-underline"
-    >
+    <div className="relative inline-flex items-center justify-center no-underline">
       <div className="relative p-2 rounded-md transition-colors hover:bg-herb-green/10">
         <ShoppingCart className="w-6 h-6 text-herb-green-light transition-colors hover:text-herb-green" />
         {itemCount > 0 && (
@@ -27,7 +23,7 @@ const CartIcon = () => {
           </span>
         )}
       </div>
-    </Link>
+    </div>
   );
 };
 

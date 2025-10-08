@@ -17,10 +17,13 @@ import SearchModal from "@/components/SearchModal";
 import { useRouter } from "next/navigation";
 // import { useLoginRequired } from "@/hooks/useLoginRequired";
 import CartIcon from "@/components/CartIcon";
+import { useDispatch } from "react-redux";
+import { openCart } from "@/redux/slices/uiSlice";
 
 const HamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -42,7 +45,7 @@ const HamburgerMenu = () => {
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push("/cart");
+    dispatch(openCart());
   };
 
   const handleProfileClick = (e: React.MouseEvent) => {
