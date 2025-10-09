@@ -3,10 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface UIState {
   isCartOpen: boolean;
+  isLoginOpen: boolean;
 }
 
 const initialState: UIState = {
   isCartOpen: false,
+  isLoginOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -22,8 +24,15 @@ const uiSlice = createSlice({
     toggleCart: (state) => {
       state.isCartOpen = !state.isCartOpen;
     },
+    openLogin: (state) => {
+      state.isLoginOpen = true;
+    },
+    closeLogin: (state) => {
+      state.isLoginOpen = false;
+    },
   },
 });
 
-export const { openCart, closeCart, toggleCart } = uiSlice.actions;
+export const { openCart, closeCart, toggleCart, openLogin, closeLogin } =
+  uiSlice.actions;
 export default uiSlice.reducer;

@@ -3,7 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
-import { closeCart } from "@/redux/slices/uiSlice";
+import { closeCart, openLogin } from "@/redux/slices/uiSlice";
 import { removeFromCart, updateQuantity } from "@/redux/slices/cartSlice";
 import { X, Trash, Plus, Minus } from "lucide-react";
 import { CLOUDINARY_BASE } from "@/constants/config";
@@ -17,7 +17,10 @@ export default function CartDrawer() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  console.log("items", items);
+  const handleCheckout = () => {
+    dispatch(closeCart());
+    dispatch(openLogin());
+  };
   return (
     <Dialog.Root
       open={isCartOpen}
@@ -125,7 +128,10 @@ export default function CartDrawer() {
                 <span className="text-herb-green font-medium">Total</span>
                 <span className="text-herb-green font-medium">₹{total}</span>
               </div>
-              <button className="w-full bg-herb-green-light text-white py-3 rounded-lg hover:bg-herb-green transition font-medium">
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-herb-green-light text-white py-3 rounded-lg hover:bg-herb-green transition font-medium"
+              >
                 Proceed to Checkout
               </button>
             </div>

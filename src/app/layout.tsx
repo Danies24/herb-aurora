@@ -6,6 +6,8 @@ import ClientLayout from "@/components/ClientLayout"; // 👈 wrapper for client
 
 import "@/styles/globals.css";
 import React from "react";
+import LoginModal from "@/components/LoginModal";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,8 +31,10 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <ClientLayout>
-          <CartDrawer />
           {children}
+          <CartDrawer />
+          <LoginModal />
+          <Toaster position="top-center" reverseOrder={false} />
         </ClientLayout>
       </body>
     </html>
