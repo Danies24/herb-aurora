@@ -35,7 +35,7 @@ const Footer = () => {
               Contact
             </Link>
             <Link
-              href="/privacy"
+              href="/privacyPolicy"
               className="text-herb-green-light font-semibold hover:text-herb-green py-1 pl-1 hover:underline"
             >
               Privacy Policy

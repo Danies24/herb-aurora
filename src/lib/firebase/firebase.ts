@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -9,16 +10,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASYREMENT_ID,
 };
-console.log(
-  "FIREBASE_API_KEY",
-  process.env.FIREBASE_API_KEY,
-  firebaseConfig.authDomain,
-  firebaseConfig.appId,
-  firebaseConfig.projectId,
-  firebaseConfig.apiKey,
-  firebaseConfig.storageBucket,
-  firebaseConfig.measurementId
-);
 
 const app = initializeApp(firebaseConfig);
 
