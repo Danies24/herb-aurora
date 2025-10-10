@@ -3,27 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  FaBars,
-  FaTimes,
-  FaWhatsapp,
-  FaSearch,
-  FaShoppingCart,
-  FaUserCircle,
-  FaLeaf,
-  FaPhone,
-  FaFlask,
-} from "react-icons/fa";
+  Menu,
+  X,
+  ShoppingCart,
+  UserCircle,
+  Leaf,
+  Phone,
+  FlaskConical,
+  Search,
+  MessageCircle,
+  Home,
+  Info,
+  Package,
+} from "lucide-react";
 import SearchModal from "@/components/SearchModal";
 import { useRouter } from "next/navigation";
-// import { useLoginRequired } from "@/hooks/useLoginRequired";
-import CartIcon from "@/components/CartIcon";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import { openCart } from "@/redux/slices/uiSlice";
 
 const HamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const dispatch = useDispatch();
+  const { items } = useSelector((state: RootState) => state.cart);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -54,43 +57,42 @@ const HamburgerMenu = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow z-[1000]">
-      <div className="max-w-[1200px] mx-auto p-4 flex justify-between items-center">
-        {/* Hamburger button (mobile) */}
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-md border-b border-gray-100 z-[1000]">
+      <div className="max-w-[1200px] mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Mobile Hamburger */}
         <button
-          className="md:hidden bg-herb-green-light text-white p-3 rounded-lg text-xl"
+          className="md:hidden bg-herb-green text-white p-2.5 rounded-lg flex items-center justify-center"
           onClick={toggleMenu}
           aria-label={isOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isOpen}
         >
-          {isOpen ? <FaTimes /> : <FaBars />}
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
         {/* Logo */}
         <Link
           href="/"
-          className="font-sans text-2xl font-semibold text-herb-green-light"
+          className="text-2xl font-semibold text-herb-green tracking-wide"
         >
           Herb Aurora
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/products"
-            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+            className="text-herb-green font-medium hover:text-herb-green-light transition"
           >
             Products
           </Link>
           <Link
             href="/about"
-            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+            className="text-herb-green font-medium hover:text-herb-green-light transition"
           >
             About
           </Link>
           <Link
             href="/contact"
-            className="text-herb-green-light font-medium hover:bg-herb-green/10 px-1"
+            className="text-herb-green font-medium hover:text-herb-green-light transition"
           >
             Contact
           </Link>
@@ -98,27 +100,35 @@ const HamburgerMenu = () => {
           <div className="flex items-center gap-4 pl-4 border-l border-gray-200">
             <button
               onClick={handleSearchClick}
-              className="text-herb-green-light text-xl p-2 rounded hover:bg-herb-green/10"
+              className="p-2 rounded-full hover:bg-herb-green/10 text-herb-green"
             >
-              <FaSearch />
+              <Search size={20} />
             </button>
+
             <button
               onClick={handleCartClick}
-              className="text-herb-green-light text-xl p-2 rounded hover:bg-herb-green/10"
+              className="relative p-2 rounded-full hover:bg-herb-green/10 text-herb-green"
             >
-              <CartIcon />
+              <ShoppingCart size={20} />
+              {items.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-herb-green text-white text-[10px] px-1.5 py-[1px] rounded-full font-medium">
+                  {items.length}
+                </span>
+              )}
             </button>
+
             <button
               onClick={handleProfileClick}
-              className="text-herb-green-light text-xl p-2 rounded hover:bg-herb-green/10"
+              className="p-2 rounded-full hover:bg-herb-green/10 text-herb-green"
             >
-              <FaUserCircle />
+              <UserCircle size={20} />
             </button>
+
             <button
               onClick={handleWhatsAppClick}
-              className="bg-herb-green-light text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium hover:opacity-90"
+              className="bg-herb-green text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium hover:opacity-90 transition"
             >
-              <FaWhatsapp /> Chat
+              <MessageCircle size={18} /> Chat
             </button>
           </div>
         </nav>
@@ -126,82 +136,102 @@ const HamburgerMenu = () => {
         {/* Mobile Cart Button */}
         <button
           onClick={handleCartClick}
-          className="md:hidden bg-herb-green-light text-white p-3 rounded-lg text-xl"
+          className="md:hidden relative bg-herb-green text-white p-2.5 rounded-lg"
         >
-          <FaShoppingCart />
+          <ShoppingCart size={22} />
+          {items.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-white text-herb-green text-[10px] font-semibold px-1.5 py-[1px] rounded-full">
+              {items.length}
+            </span>
+          )}
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 transition-opacity duration-300 z-[1001] ${
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 z-[1001] ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={closeMenu}
       >
+        {/* Sliding Menu */}
         <nav
-          className={`fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 flex flex-col gap-4 transform transition-transform duration-300 ${
+          className={`fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 flex flex-col justify-between transform transition-transform duration-300 shadow-2xl ${
             isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex justify-between items-center border-b pb-4 mb-4">
-            <h2 className="text-xl font-semibold text-herb-green-light">
-              Menu
-            </h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-herb-green">Menu</h2>
             <button
               onClick={closeMenu}
-              className="text-herb-green-light text-2xl p-2 hover:bg-herb-green/10 rounded"
+              className="text-herb-green p-2 rounded-full hover:bg-herb-green/10"
             >
-              <FaTimes />
+              <X size={22} />
             </button>
           </div>
 
           {/* Links */}
-          <div className="flex flex-col gap-2 flex-1">
+          <div className="flex flex-col gap-3 text-herb-green font-medium text-base">
             <button
               onClick={handleProfileClick}
-              className="flex items-center gap-3 text-herb-green-light text-lg p-2 rounded hover:bg-herb-green/10"
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition"
             >
-              <FaUserCircle /> Profile
+              <UserCircle size={20} /> My Profile
             </button>
+
             <Link
               href="/products"
               onClick={closeMenu}
-              className="flex items-center gap-3 text-herb-green-light text-lg p-2 rounded hover:bg-herb-green/10"
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition"
             >
-              <FaLeaf /> Products
+              <Leaf size={20} /> Products
             </Link>
+
             <Link
               href="/about"
               onClick={closeMenu}
-              className="flex items-center gap-3 text-herb-green-light text-lg p-2 rounded hover:bg-herb-green/10"
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition"
             >
-              <FaFlask /> About
+              <FlaskConical size={20} /> About
             </Link>
+
             <Link
               href="/contact"
               onClick={closeMenu}
-              className="flex items-center gap-3 text-herb-green-light text-lg p-2 rounded hover:bg-herb-green/10"
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition"
             >
-              <FaPhone /> Contact
+              <Phone size={20} /> Contact
             </Link>
+
             <button
               onClick={handleSearchClick}
-              className="flex items-center gap-3 text-herb-green-light text-lg p-2 rounded hover:bg-herb-green/10"
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition"
             >
-              <FaSearch /> Search
+              <Search size={20} /> Search
+            </button>
+
+            <button
+              onClick={handleCartClick}
+              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition relative"
+            >
+              <ShoppingCart size={20} /> My Cart
+              {items.length > 0 && (
+                <span className="ml-auto bg-herb-green text-white text-xs font-semibold px-2 py-[1px] rounded-full">
+                  {items.length}
+                </span>
+              )}
             </button>
           </div>
 
           {/* Footer */}
-          <div className="border-t pt-4">
+          <div className="pt-4 border-t">
             <button
               onClick={handleWhatsAppClick}
-              className="w-full bg-herb-green-light text-white py-3 rounded-lg flex items-center justify-center gap-2 font-medium hover:opacity-90"
+              className="w-full bg-herb-green text-white py-3 rounded-lg flex items-center justify-center gap-2 font-medium hover:opacity-90 transition"
             >
-              <FaWhatsapp /> Chat on WhatsApp
+              <MessageCircle size={18} /> Chat on WhatsApp
             </button>
           </div>
         </nav>

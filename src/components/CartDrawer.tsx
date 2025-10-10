@@ -104,7 +104,7 @@ export default function CartDrawer() {
                               removeFromCart({ id: item.id, size: item.size })
                             )
                           }
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-1000  transition"
                         >
                           <Trash size={14} />
                         </button>
