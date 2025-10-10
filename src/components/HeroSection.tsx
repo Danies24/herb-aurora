@@ -12,6 +12,7 @@ const heroImages = [
 
 const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [animating, setAnimating] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -38,7 +39,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative w-screen h-[60vh] mt-24 overflow-hidden bg-gradient-to-r from-herb-green to-secondary">
+    <section className="relative w-screen h-[60vh] mt-16 overflow-hidden bg-gradient-to-r from-herb-green to-secondary">
       {/* Carousel Container */}
       <div className="relative w-full h-full min-h-[60vh]">
         {heroImages.map((img, idx) => (

@@ -18,7 +18,6 @@ const WhatsAppFloat = () => {
         aria-label="Chat on WhatsApp"
       >
         <FaWhatsapp className="text-xl md:text-2xl" />
-        <span>Chat</span>
       </button>
     </div>
   );

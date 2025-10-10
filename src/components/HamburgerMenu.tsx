@@ -12,9 +12,6 @@ import {
   FlaskConical,
   Search,
   MessageCircle,
-  Home,
-  Info,
-  Package,
 } from "lucide-react";
 import SearchModal from "@/components/SearchModal";
 import { useRouter } from "next/navigation";
@@ -156,7 +153,7 @@ const HamburgerMenu = () => {
       >
         {/* Sliding Menu */}
         <nav
-          className={`fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 flex flex-col justify-between transform transition-transform duration-300 shadow-2xl ${
+          className={`fixed top-0 left-0 w-[85vw] h-screen max-w-[400px] bg-white p-6 flex flex-col justify-between transform transition-transform duration-300 shadow-2xl overflow-y-auto ${
             isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
           onClick={(e) => e.stopPropagation()}
