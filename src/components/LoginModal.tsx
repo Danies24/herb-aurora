@@ -19,10 +19,11 @@ export default function LoginModal() {
   const dispatch = useDispatch();
   const { isLoginOpen } = useSelector((state: RootState) => state.ui);
 
-  const [step, setStep] = useState<"mobile" | "otp">("mobile");
+  const [step, setStep] = useState<"mobile" | "otp" | "register">("mobile");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const newUser = true;
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
@@ -71,16 +72,24 @@ export default function LoginModal() {
 
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found");
-
-      toast.success("Login successful 🌿");
-      dispatch(closeLogin());
-      // next → show address modal or proceed to checkout
+      if (newUser) {
+        console.log("user", user);
+        setStep("register");
+      } else {
+        toast.success("Login successful 🌿");
+        dispatch(closeLogin());
+      }
     } catch (e) {
       console.error(e);
       toast.error("Invalid or expired OTP. Try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const saveRegistration = () => {
+    dispatch(closeLogin());
+    toast.success("Profile saved successfully ✨");
   };
 
   return (
@@ -135,20 +144,20 @@ export default function LoginModal() {
                 {loading ? "Sending..." : "Send OTP"}
               </button>
 
-              <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+              {/* <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
                 <span className="h-px bg-gray-200 w-1/4"></span>
                 or
                 <span className="h-px bg-gray-200 w-1/4"></span>
-              </div>
+              </div> */}
 
               {/* Google Login */}
-              <button
+              {/* <button
                 className="w-full py-3 rounded-xl border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-50 transition font-medium text-herb-green"
                 onClick={() => toast("Google Login coming soon!")}
               >
                 <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
                 Login with Google
-              </button>
+              </button> */}
             </div>
           )}
 
@@ -188,6 +197,75 @@ export default function LoginModal() {
                 className="text-sm text-herb-green-light hover:underline block mx-auto"
               >
                 Edit mobile number
+              </button>
+            </div>
+          )}
+
+          {/* Step 3: User  Registration */}
+          {step === "register" && (
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your full name"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  value={mobile}
+                  disabled
+                  className="w-full border border-gray-200 bg-gray-100 rounded-xl px-3 py-2.5 text-gray-500 cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Address Line 1
+                </label>
+                <input
+                  type="text"
+                  placeholder="House / Flat / Street name"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Address Line 2
+                </label>
+                <input
+                  type="text"
+                  placeholder="Landmark / Area / City"
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Pincode
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your area pincode"
+                  maxLength={6}
+                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                />
+              </div>
+
+              <button
+                onClick={saveRegistration}
+                className="w-full py-3 rounded-xl font-semibold text-white bg-herb-green hover:opacity-90 transition"
+              >
+                Save
               </button>
             </div>
           )}
