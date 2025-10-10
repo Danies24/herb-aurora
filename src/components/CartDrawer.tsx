@@ -32,7 +32,7 @@ export default function CartDrawer() {
     0
   );
 
-  const isLoggedIn = true;
+  const isLoggedIn = false;
   const delivery = 50;
   const grandTotal = total + delivery;
 
