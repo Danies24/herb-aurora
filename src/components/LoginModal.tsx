@@ -1,10 +1,13 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { closeLogin } from "@/redux/slices/uiSlice";
+import {
+  closeLogin,
+  openCart,
+  resetAuthRedirect,
+} from "@/redux/slices/uiSlice";
 import { useState } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -14,19 +17,41 @@ import {
   signInWithPhoneNumber,
   ConfirmationResult,
 } from "firebase/auth";
+import { setCredentials } from "@/redux/slices/authSlice";
+import { useRouter } from "next/navigation";
 
 export default function LoginModal() {
   const dispatch = useDispatch();
-  const { isLoginOpen } = useSelector((state: RootState) => state.ui);
+  const router = useRouter();
+  const { isLoginOpen, authRedirect } = useSelector(
+    (state: RootState) => state.ui
+  );
 
   const [step, setStep] = useState<"mobile" | "otp" | "register">("mobile");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const newUser = true;
+  const [idToken, setIdToken] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    line1: "",
+    line2: "",
+    pincode: "",
+    city: "",
+    state: "",
+  });
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+
+  const handlePostLoginRedirect = () => {
+    if (authRedirect === "profile") {
+      router.push("/profile");
+    } else if (authRedirect === "checkout") {
+      dispatch(openCart());
+    }
+    dispatch(resetAuthRedirect());
+  };
 
   // --- 🔹 Send OTP ---
   const handleSendOtp = async () => {
@@ -72,12 +97,24 @@ export default function LoginModal() {
 
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found");
-      if (newUser) {
-        console.log("user", user);
+      const token = await user.getIdToken();
+      setIdToken(token);
+      const res = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: token }),
+      });
+      const data = await res.json();
+      console.log("data", data);
+
+      if (data?.isNew) {
+        toast("New user — please complete your profile 🌿");
         setStep("register");
       } else {
-        toast.success("Login successful 🌿");
+        toast.success("Welcome back 🌿");
+        dispatch(setCredentials({ user: data.profile, token: idToken }));
         dispatch(closeLogin());
+        handlePostLoginRedirect();
       }
     } catch (e) {
       console.error(e);
@@ -87,7 +124,44 @@ export default function LoginModal() {
     }
   };
 
-  const saveRegistration = () => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const saveRegistration = async () => {
+    if (!idToken) return toast.error("Session expired, please login again");
+
+    const { fullName, line1, line2, pincode } = formData;
+    if (!fullName || !line1 || !line2 || !pincode)
+      return toast.error("Please fill all required fields");
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to register user");
+
+      dispatch(setCredentials({ user: data.user, token: idToken }));
+      toast.success("Profile saved successfully ✨");
+      dispatch(closeLogin());
+      handlePostLoginRedirect();
+    } catch (e) {
+      console.error(e);
+      toast.error(e.message || "Failed to save profile");
+    } finally {
+      setLoading(false);
+    }
     dispatch(closeLogin());
     toast.success("Profile saved successfully ✨");
   };
@@ -212,6 +286,9 @@ export default function LoginModal() {
                   type="text"
                   placeholder="Enter your full name"
                   className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -235,6 +312,9 @@ export default function LoginModal() {
                   type="text"
                   placeholder="House / Flat / Street name"
                   className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                  name="line1"
+                  value={formData.line1}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -246,6 +326,9 @@ export default function LoginModal() {
                   type="text"
                   placeholder="Landmark / Area / City"
                   className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                  name="line2"
+                  value={formData.line2}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -258,6 +341,9 @@ export default function LoginModal() {
                   placeholder="Enter your area pincode"
                   maxLength={6}
                   className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-gray-800 focus:ring-2 focus:ring-herb-green outline-none transition"
+                  name="pincode"
+                  value={formData.pincode}
+                  onChange={handleInputChange}
                 />
               </div>
 

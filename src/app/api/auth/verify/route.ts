@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminAuth } from "@/lib/firebase/firebaseAdmin";
-import { connectToDatabase } from "@/db/mangoose"; 
+import { connectToDatabase } from "@/db/mangoose";
 import User from "@/db/models/User.model";
 import Address from "@/db/models/Address.model";
 
@@ -61,6 +61,9 @@ export async function POST(req: Request) {
     });
   } catch (err: any) {
     console.error("🔥 verify route error:", err);
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Server crashed", details: err.message },
+      { status: 500 }
+    );
   }
 }

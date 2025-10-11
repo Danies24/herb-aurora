@@ -24,6 +24,8 @@ export default function CartDrawer() {
   const dispatch = useDispatch();
   const { isCartOpen } = useSelector((state: RootState) => state.ui);
   const { items } = useSelector((state: RootState) => state.cart);
+  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+
   const [step, setStep] = useState<"cart" | "address">("cart");
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -32,7 +34,6 @@ export default function CartDrawer() {
     0
   );
 
-  const isLoggedIn = false;
   const delivery = 50;
   const grandTotal = total + delivery;
 
@@ -46,7 +47,7 @@ export default function CartDrawer() {
       setStep("address");
     } else {
       dispatch(closeCart());
-      dispatch(openLogin());
+      dispatch(openLogin("cart"));
     }
   };
 

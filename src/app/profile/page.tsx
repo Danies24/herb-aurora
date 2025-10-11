@@ -9,19 +9,34 @@ import {
   CheckCircle,
   Info,
   LogOut,
-  Menu,
   X,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { logout } from "@/redux/slices/authSlice";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { openLogin } from "@/redux/slices/uiSlice";
 
 const SECTIONS = [
-  { key: "personal", label: "Account Information", icon: <User size={20} /> },
-  { key: "orders", label: "Order History", icon: <Package size={20} /> },
-  { key: "addresses", label: "Addresses", icon: <MapPin size={20} /> },
+  { key: "personal", label: "My Account", icon: <User size={20} /> },
+  { key: "orders", label: "My Orders", icon: <Package size={20} /> },
+  { key: "addresses", label: "My Addresses", icon: <MapPin size={20} /> },
 ];
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState("personal");
   const [mobileMenu, setMobileMenu] = useState(false);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  if (!user) {
+    dispatch(openLogin("profile"));
+    return;
+  }
+
+  const { fullName, phone } = user;
 
   const addresses = [
     {
@@ -36,6 +51,12 @@ export default function ProfilePage() {
       default: true,
     },
   ];
+
+  const handleLogOut = () => {
+    dispatch(logout());
+    toast.success("Log out Successful ");
+    router.push("/");
+  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-herb-green/5 via-amber-50/30 to-white overflow-hidden pt-20">
@@ -122,8 +143,8 @@ export default function ProfilePage() {
             <div className="w-24 h-24 rounded-full bg-herb-green/10 flex items-center justify-center mb-3">
               <User size={40} className="text-herb-green" />
             </div>
-            <h2 className="font-bold text-herb-green text-lg">DANIES</h2>
-            <p className="text-gray-600 text-sm mb-6">+91 8248965737</p>
+            <h2 className="font-bold text-herb-green text-lg">{fullName}</h2>
+            <p className="text-gray-600 text-sm mb-6">{phone}</p>
 
             {/* Section Tiles */}
             <div className="w-full flex flex-col gap-3 mb-6">
@@ -148,7 +169,10 @@ export default function ProfilePage() {
               ))}
 
               {/* Logout */}
-              <button className="flex items-center justify-between px-5 py-4 rounded-lg shadow-sm border border-gray-200 bg-white text-red-500 hover:bg-red-50 transition">
+              <button
+                onClick={handleLogOut}
+                className="flex items-center justify-between px-5 py-4 rounded-lg shadow-sm border border-gray-200 bg-white text-red-500 hover:bg-red-50 transition"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-full bg-red-100">
                     <LogOut size={18} />
@@ -168,27 +192,15 @@ export default function ProfilePage() {
                   </h2>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between border-b pb-2">
-                      <span className="text-gray-500">First Name</span>
+                      <span className="text-gray-500">Full Name</span>
                       <span className="font-semibold text-herb-green">
-                        Danies
+                        {fullName}
                       </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
-                      <span className="text-gray-500">Last Name</span>
+                      <span className="text-gray-500">Mobile Number</span>
                       <span className="font-semibold text-herb-green">
-                        Mohamed
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-gray-500">Mobile</span>
-                      <span className="font-semibold text-herb-green">
-                        +91 9876543210
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Pincode</span>
-                      <span className="font-semibold text-herb-green">
-                        560035
+                        {phone}
                       </span>
                     </div>
                   </div>
@@ -256,19 +268,11 @@ export default function ProfilePage() {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="flex flex-col bg-herb-green/5 p-4 rounded-lg border-l-4 border-herb-green hover:bg-herb-green/10 transition">
                     <label className="flex items-center gap-2 text-sm font-semibold uppercase text-herb-green/80">
-                      <User size={16} /> First Name
+                      <User size={16} />
+                      Full Name
                     </label>
                     <span className="font-semibold text-herb-green text-lg">
-                      Danies
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col bg-herb-green/5 p-4 rounded-lg border-l-4 border-herb-green hover:bg-herb-green/10 transition">
-                    <label className="flex items-center gap-2 text-sm font-semibold uppercase text-herb-green/80">
-                      <User size={16} /> Last Name
-                    </label>
-                    <span className="font-semibold text-herb-green text-lg">
-                      Mohamed
+                      {fullName}
                     </span>
                   </div>
 
@@ -277,16 +281,7 @@ export default function ProfilePage() {
                       <Phone size={16} /> Mobile Number
                     </label>
                     <span className="font-semibold text-herb-green text-lg">
-                      +91 9876543210
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col bg-herb-green/5 p-4 rounded-lg border-l-4 border-herb-green hover:bg-herb-green/10 transition">
-                    <label className="flex items-center gap-2 text-sm font-semibold uppercase text-herb-green/80">
-                      <MapPin size={16} /> Pincode
-                    </label>
-                    <span className="font-semibold text-herb-green text-lg">
-                      560035
+                      {phone}
                     </span>
                   </div>
                 </div>
