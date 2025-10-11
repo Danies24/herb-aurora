@@ -17,13 +17,14 @@ import SearchModal from "@/components/SearchModal";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { openCart } from "@/redux/slices/uiSlice";
+import { openCart, openLogin } from "@/redux/slices/uiSlice";
 
 const HamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const dispatch = useDispatch();
   const { items } = useSelector((state: RootState) => state.cart);
+  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -49,8 +50,12 @@ const HamburgerMenu = () => {
   };
 
   const handleProfileClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    router.push("/profile");
+    if (isLoggedIn) {
+      e.preventDefault();
+      router.push("/profile");
+    } else {
+      dispatch(openLogin("profile"));
+    }
   };
 
   return (

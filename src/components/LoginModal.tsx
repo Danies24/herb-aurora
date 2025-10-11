@@ -19,6 +19,7 @@ import {
 } from "firebase/auth";
 import { setCredentials } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
+import { syncCartAfterLogin } from "@/lib/mergeCart";
 
 export default function LoginModal() {
   const dispatch = useDispatch();
@@ -26,7 +27,6 @@ export default function LoginModal() {
   const { isLoginOpen, authRedirect } = useSelector(
     (state: RootState) => state.ui
   );
-
   const [step, setStep] = useState<"mobile" | "otp" | "register">("mobile");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
@@ -112,8 +112,9 @@ export default function LoginModal() {
         setStep("register");
       } else {
         toast.success("Welcome back 🌿");
-        dispatch(setCredentials({ user: data.profile, token: idToken }));
+        dispatch(setCredentials({ user: data.profile, token }));
         dispatch(closeLogin());
+        await syncCartAfterLogin(token);
         handlePostLoginRedirect();
       }
     } catch (e) {

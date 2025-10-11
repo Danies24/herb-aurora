@@ -16,7 +16,6 @@ import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { openLogin } from "@/redux/slices/uiSlice";
 
 const SECTIONS = [
   { key: "personal", label: "My Account", icon: <User size={20} /> },
@@ -31,10 +30,7 @@ export default function ProfilePage() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  if (!user) {
-    dispatch(openLogin("profile"));
-    return;
-  }
+  if (!user) return null;
 
   const { fullName, phone } = user;
 
@@ -89,7 +85,10 @@ export default function ProfilePage() {
             </ul>
           </div>
 
-          <button className="mt-8 flex items-center gap-2 text-red-500 font-semibold hover:text-red-600">
+          <button
+            onClick={handleLogOut}
+            className="mt-8 flex items-center gap-2 text-red-500 font-semibold hover:text-red-600"
+          >
             <LogOut size={18} /> Logout
           </button>
         </aside>
@@ -127,7 +126,10 @@ export default function ProfilePage() {
                   </button>
                 </li>
               ))}
-              <button className="mt-5 flex items-center gap-2 text-red-500 font-semibold">
+              <button
+                onClick={handleLogOut}
+                className="mt-5 flex items-center gap-2 text-red-500 font-semibold"
+              >
                 <LogOut size={18} /> Logout
               </button>
             </ul>

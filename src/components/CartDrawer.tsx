@@ -4,7 +4,11 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { closeCart, openLogin } from "@/redux/slices/uiSlice";
-import { removeFromCart, updateQuantity } from "@/redux/slices/cartSlice";
+import {
+  removeFromCart,
+  setCart,
+  updateQuantity,
+} from "@/redux/slices/cartSlice";
 import {
   X,
   Trash,
@@ -17,14 +21,14 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { CLOUDINARY_BASE } from "@/constants/config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function CartDrawer() {
   const dispatch = useDispatch();
   const { isCartOpen } = useSelector((state: RootState) => state.ui);
   const { items } = useSelector((state: RootState) => state.cart);
-  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+  const { isLoggedIn, token } = useSelector((state: RootState) => state.auth);
 
   const [step, setStep] = useState<"cart" | "address">("cart");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -42,12 +46,80 @@ export default function CartDrawer() {
     setShowAddForm(false);
   };
 
+  const fetchCartFromDB = async () => {
+    if (!isLoggedIn || !token) return;
+
+    try {
+      const res = await fetch("/api/cart", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to load cart");
+
+      dispatch(setCart(data.items));
+    } catch (err) {
+      console.error("Cart fetch error:", err);
+    }
+  };
+
+  // Load DB cart when logged in
+  useEffect(() => {
+    fetchCartFromDB();
+  }, [isLoggedIn]);
+
   const handleCheckout = () => {
     if (isLoggedIn) {
       setStep("address");
     } else {
       dispatch(closeCart());
       dispatch(openLogin("cart"));
+    }
+  };
+
+  const handleQuantityChange = async (
+    id: string,
+    size: string | undefined,
+    newQty: number
+  ) => {
+    dispatch(updateQuantity({ id, size, quantity: newQty }));
+    if (!isLoggedIn || !token) return;
+
+    try {
+      const res = await fetch("/api/cart/update", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId: id, quantity: newQty }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      dispatch(setCart(data.items));
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update cart");
+    }
+  };
+
+  const handleRemove = async (id: string, size?: string) => {
+    dispatch(removeFromCart({ id, size })); // instant UI
+
+    if (!isLoggedIn || !token) return;
+
+    try {
+      const res = await fetch("/api/cart/remove", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId: id }),
+      });
+
+      if (!res.ok) throw new Error("Failed to remove item");
+    } catch (err: any) {
+      toast.error(err.message || "Error removing item");
     }
   };
 
@@ -100,11 +172,7 @@ export default function CartDrawer() {
                           />
                         )}
                         <button
-                          onClick={() =>
-                            dispatch(
-                              removeFromCart({ id: item.id, size: item.size })
-                            )
-                          }
+                          onClick={() => handleRemove(item.id, item.size)}
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-1000  transition"
                         >
                           <Trash size={14} />
@@ -130,12 +198,10 @@ export default function CartDrawer() {
                           <div className="flex items-center bg-herb-green/10 rounded-full px-2 py-1">
                             <button
                               onClick={() =>
-                                dispatch(
-                                  updateQuantity({
-                                    id: item.id,
-                                    size: item.size,
-                                    quantity: Math.max(1, item.quantity - 1),
-                                  })
+                                handleQuantityChange(
+                                  item.id,
+                                  item.size,
+                                  Math.max(1, item.quantity - 1)
                                 )
                               }
                               className="p-1 rounded-full hover:bg-herb-green/20 transition"
@@ -147,12 +213,10 @@ export default function CartDrawer() {
                             </span>
                             <button
                               onClick={() =>
-                                dispatch(
-                                  updateQuantity({
-                                    id: item.id,
-                                    size: item.size,
-                                    quantity: item.quantity + 1,
-                                  })
+                                handleQuantityChange(
+                                  item.id,
+                                  item.size,
+                                  item.quantity + 1
                                 )
                               }
                               className="p-1 rounded-full hover:bg-herb-green/20 transition"
