@@ -39,35 +39,15 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isLoggedIn = true;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(state.user));
-        localStorage.setItem("token", state.token);
-      }
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isLoggedIn = false;
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-      }
-    },
-    hydrateFromLocalStorage: (state) => {
-      if (typeof window !== "undefined") {
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
-        if (storedUser && storedToken) {
-          state.user = JSON.parse(storedUser);
-          state.token = storedToken;
-          state.isLoggedIn = true;
-        }
-      }
     },
   },
 });
 
-export const { setCredentials, logout, hydrateFromLocalStorage } =
-  authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 
 export default authSlice.reducer;

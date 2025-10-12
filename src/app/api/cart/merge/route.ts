@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/db/mangoose";
 import Cart from "@/db/models/Cart.model";
 import User from "@/db/models/User.model";
-import { verifyFirebaseUser } from "@/lib/verifyFirebaseUser";
+import { verifyFirebaseUser } from "@/lib/firebase/verifyFirebaseUser";
+import { handleApiError } from "@/utlls/handleError";
 
 export async function POST(req: Request) {
   try {
@@ -27,15 +28,15 @@ export async function POST(req: Request) {
         cart.items.push({
           product: item.id,
           quantity: item.quantity,
-          priceAtAddTime: item.price,
+          priceAtAddTime: item.priceAtAddTime || item.price,
         });
       }
     }
 
     await cart.save();
     return NextResponse.json({ success: true, cart });
-  } catch (err: any) {
-    console.error("Cart MERGE error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const handled = handleApiError(err, "Cart Merge");
+    return NextResponse.json(handled, { status: 500 });
   }
 }

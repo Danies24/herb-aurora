@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Product } from "@/types/product";
 import { CLOUDINARY_BASE } from "@/constants/config";
 import { openCart } from "@/redux/slices/uiSlice";
+import { addToCartHandler } from "@/utlls/addToCartHandler";
 
 type ProductSectionProps = {
   title: string;
@@ -27,28 +28,14 @@ const ProductSection = ({ title, subTitle, products }: ProductSectionProps) => {
 
   // Helper: is product already in cart?
   const isInCart = (productId: string, size: string) => {
-    return cartItems.some(
+    return cartItems?.some(
       (item) => item.id === productId && item.size === size
     );
   };
 
   // Add to cart
   const handleAddToCart = (product: Product) => {
-    try {
-      dispatch(
-        addToCart({
-          id: product.id,
-          name: product.name,
-          price: product.variants[0].price,
-          quantity: 1,
-          size: product.variants[0].size,
-          image: product.images[0],
-        })
-      );
-      toast.success("Added to your cart!");
-    } catch {
-      toast.error("Failed to add to cart");
-    }
+    addToCartHandler(product, dispatch);
   };
 
   const handleGoToBag = () => {

@@ -33,7 +33,7 @@ export default function CartDrawer() {
   const [step, setStep] = useState<"cart" | "address">("cart");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const total = items.reduce(
+  const total = items?.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
@@ -156,7 +156,7 @@ export default function CartDrawer() {
           {step === "cart" && (
             <div className="flex flex-col h-full">
               <div className="flex-1 overflow-y-auto pr-1 pb-10 space-y-4">
-                {items.length > 0 ? (
+                {items?.length > 0 ? (
                   items.map((item) => (
                     <div
                       key={item.id + item.size}
@@ -247,7 +247,7 @@ export default function CartDrawer() {
               </div>
 
               {/* Checkout Footer */}
-              {items.length > 0 && (
+              {items?.length > 0 && (
                 <div className="sticky bottom-0 bg-white border-t border-herb-green pt-4 pb-5 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
                   <div className="flex justify-between mb-3 font-medium">
                     <span className="text-herb-green font-medium">Total</span>

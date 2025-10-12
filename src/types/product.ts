@@ -6,6 +6,7 @@ export interface ProductVariant {
 }
 
 export interface Product {
+  _id: string;
   id: string;
   name: string;
   target: string;

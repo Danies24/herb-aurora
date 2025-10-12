@@ -112,7 +112,7 @@ const HamburgerMenu = () => {
               className="relative p-2 rounded-full hover:bg-herb-green/10 text-herb-green"
             >
               <ShoppingCart size={20} />
-              {items.length > 0 && (
+              {items?.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-herb-green text-white text-[10px] px-1.5 py-[1px] rounded-full font-medium">
                   {items.length}
                 </span>
@@ -141,7 +141,7 @@ const HamburgerMenu = () => {
           className="md:hidden relative bg-herb-green text-white p-2.5 rounded-lg"
         >
           <ShoppingCart size={22} />
-          {items.length > 0 && (
+          {items?.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-white text-herb-green text-[10px] font-semibold px-1.5 py-[1px] rounded-full">
               {items.length}
             </span>
@@ -219,7 +219,7 @@ const HamburgerMenu = () => {
               className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-herb-green/10 transition relative"
             >
               <ShoppingCart size={20} /> My Cart
-              {items.length > 0 && (
+              {items?.length > 0 && (
                 <span className="ml-auto bg-herb-green text-white text-xs font-semibold px-2 py-[1px] rounded-full">
                   {items.length}
                 </span>

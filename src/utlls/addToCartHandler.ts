@@ -1,54 +1,56 @@
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, store } from "@/redux/store";
 import { addToCart, setCart } from "@/redux/slices/cartSlice";
 import toast from "react-hot-toast";
-
-export interface AddToCartPayload {
-  id: string;
-  name: string;
-  price: number;
-  quantity?: number;
-  size?: string;
-  image?: string;
-}
+import { Product } from "@/types/product";
+import { handleClientError } from "./handleError";
+import { CartItemFromApi } from "./cartMapper";
 
 export const addToCartHandler = async (
-  product: AddToCartPayload,
-  dispatch: AppDispatch,
-  isLoggedIn: boolean,
-  token?: string
+  product: Product,
+  dispatch: AppDispatch
 ) => {
-  const item = { ...product, quantity: product.quantity ?? 1 };
-
-  // 🧍 Guest user → Only Redux + localStorage
-  if (!isLoggedIn) {
-    dispatch(addToCart(item));
-    toast.success("Added to cart 🛒");
-    return;
-  }
-
-  // 👤 Logged-in user → Call API
   try {
+    const { auth } = store.getState();
+    const { isLoggedIn, token } = auth;
+    const cartParams = {
+      id: product._id,
+      name: product.name,
+      price: product.variants[0].price,
+      quantity: 1,
+      size: product.variants[0].size,
+      image: product.images[0],
+    };
+
+    if (!isLoggedIn) {
+      dispatch(addToCart(cartParams));
+      toast.success("Added to cart 🛍️");
+      return;
+    }
+
     const res = await fetch("/api/cart/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        productId: product.id,
-        quantity: product.quantity ?? 1,
-        price: product.price,
-      }),
+      body: JSON.stringify(cartParams),
     });
 
     const data = await res.json();
-
     if (!res.ok) throw new Error(data.error || "Failed to add to cart");
 
-    // ✅ Sync Redux with backend cart items
-    dispatch(setCart(data.items));
+    const transformed = data.cart.items.map((item: CartItemFromApi) => ({
+      id: item.product._id,
+      name: item.product.name,
+      price: item.priceAtAddTime,
+      quantity: item.quantity,
+      size: item.product.variants?.[0]?.size || "Standard",
+      image: item.product.images?.[0] || "",
+    }));
+
+    dispatch(setCart(transformed));
     toast.success("Added to cart 🛍️");
-  } catch (err: any) {
-    toast.error(err.message || "Failed to add item");
+  } catch (err: unknown) {
+    handleClientError(err, "Failed to add cart !!");
   }
 };
