@@ -1,7 +1,7 @@
 // src/app/api/cart/merge/route.ts
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/db/mangoose";
-import Cart from "@/db/models/Cart.model";
+import Cart, { ICartItem } from "@/db/models/Cart.model";
 import User from "@/db/models/User.model";
 import { verifyFirebaseUser } from "@/lib/firebase/verifyFirebaseUser";
 import { handleApiError } from "@/utlls/handleError";
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     for (const item of guestCart) {
       const existing = cart.items.find(
-        (i: any) => i.product.toString() === item.id
+        (i: ICartItem) => i.product.toString() === item.id
       );
       if (existing) {
         existing.quantity += item.quantity;

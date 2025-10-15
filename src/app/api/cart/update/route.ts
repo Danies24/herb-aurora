@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/db/mangoose";
-import Cart from "@/db/models/Cart.model";
+import Cart, { ICartItem } from "@/db/models/Cart.model";
 import User from "@/db/models/User.model";
 import { verifyFirebaseUser } from "@/lib/firebase/verifyFirebaseUser";
+import { handleApiError } from "@/utlls/handleError";
 
 export async function PATCH(req: Request) {
   try {
@@ -17,7 +18,7 @@ export async function PATCH(req: Request) {
     if (!cart) throw new Error("Cart not found");
 
     const item = cart.items.find(
-      (i: any) => i.product.toString() === productId
+      (i: ICartItem) => i.product.toString() === productId
     );
     if (!item) throw new Error("Product not in cart");
 
@@ -25,8 +26,8 @@ export async function PATCH(req: Request) {
     await cart.save();
 
     return NextResponse.json({ success: true, cart });
-  } catch (err: any) {
-    console.error("Cart UPDATE error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const handled = handleApiError(err, "Cart UPDATE error");
+    return NextResponse.json(handled, { status: 500 });
   }
 }

@@ -21,8 +21,10 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { CLOUDINARY_BASE } from "@/constants/config";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { handleClientError } from "@/utlls/handleError";
+import { authorizedFetch, mapDBCartToReduxItems } from "@/utlls/helper";
 
 export default function CartDrawer() {
   const dispatch = useDispatch();
@@ -46,33 +48,31 @@ export default function CartDrawer() {
     setShowAddForm(false);
   };
 
-  const fetchCartFromDB = async () => {
+  const fetchCartFromDB = useCallback(async () => {
     if (!isLoggedIn || !token) return;
-
     try {
-      const res = await fetch("/api/cart", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authorizedFetch("/api/cart");
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load cart");
 
-      dispatch(setCart(data.items));
+      dispatch(setCart(mapDBCartToReduxItems(data)));
     } catch (err) {
       console.error("Cart fetch error:", err);
     }
-  };
+  }, [dispatch, isLoggedIn, token]);
 
   // Load DB cart when logged in
   useEffect(() => {
     fetchCartFromDB();
-  }, [isLoggedIn]);
+  }, [fetchCartFromDB, isLoggedIn]);
 
   const handleCheckout = () => {
     if (isLoggedIn) {
       setStep("address");
     } else {
       dispatch(closeCart());
-      dispatch(openLogin("cart"));
+      dispatch(openLogin("checkout"));
     }
   };
 
@@ -85,41 +85,40 @@ export default function CartDrawer() {
     if (!isLoggedIn || !token) return;
 
     try {
-      const res = await fetch("/api/cart/update", {
+      const res = await authorizedFetch("/api/cart/update", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ productId: id, quantity: newQty }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
       dispatch(setCart(data.items));
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update cart");
+    } catch (err: unknown) {
+      handleClientError(err, "Failed to update cart");
     }
   };
 
   const handleRemove = async (id: string, size?: string) => {
-    dispatch(removeFromCart({ id, size })); // instant UI
+    dispatch(removeFromCart({ id, size }));
 
     if (!isLoggedIn || !token) return;
 
     try {
-      const res = await fetch("/api/cart/remove", {
+      const res = await authorizedFetch("/api/cart/remove", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ productId: id }),
       });
 
       if (!res.ok) throw new Error("Failed to remove item");
-    } catch (err: any) {
-      toast.error(err.message || "Error removing item");
+    } catch (err: unknown) {
+      handleClientError(err, "Error removing item");
     }
   };
 

@@ -19,7 +19,7 @@ const initialState: CartState = {
 };
 
 const findIndex = (items: CartItem[], id: string, size?: string) =>
-  items.findIndex((i) => i.id === id && (size ? i.size === size : true));
+  items?.findIndex((i) => i.id === id && (size ? i.size === size : true));
 
 const cartSlice = createSlice({
   name: "cart",

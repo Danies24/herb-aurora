@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store"; // adjust path to your store
-import { addToCart } from "@/redux/slices/cartSlice";
-import toast from "react-hot-toast";
 import { Product } from "@/types/product";
 import { CLOUDINARY_BASE } from "@/constants/config";
 import { openCart } from "@/redux/slices/uiSlice";

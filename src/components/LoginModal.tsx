@@ -20,6 +20,7 @@ import {
 import { setCredentials } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
 import { syncCartAfterLogin } from "@/lib/mergeCart";
+import { handleClientError } from "@/utlls/handleError";
 
 export default function LoginModal() {
   const dispatch = useDispatch();
@@ -112,7 +113,15 @@ export default function LoginModal() {
         setStep("register");
       } else {
         toast.success("Welcome back 🌿");
-        dispatch(setCredentials({ user: data.profile, token }));
+        dispatch(
+          setCredentials({
+            user: {
+              firebaseUid: user.uid,
+              ...data.profile,
+            },
+            token,
+          })
+        );
         dispatch(closeLogin());
         await syncCartAfterLogin(token);
         handlePostLoginRedirect();
@@ -153,13 +162,13 @@ export default function LoginModal() {
 
       if (!res.ok) throw new Error(data.error || "Failed to register user");
 
-      dispatch(setCredentials({ user: data.user, token: idToken }));
       toast.success("Profile saved successfully ✨");
+      dispatch(setCredentials({ user: data.user, token: idToken }));
       dispatch(closeLogin());
+      await syncCartAfterLogin(idToken);
       handlePostLoginRedirect();
-    } catch (e) {
-      console.error(e);
-      toast.error(e.message || "Failed to save profile");
+    } catch (e: unknown) {
+      handleClientError(e, "Failed to save profile");
     } finally {
       setLoading(false);
     }

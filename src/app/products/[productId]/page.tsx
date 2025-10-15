@@ -2,24 +2,21 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
-import toast from "react-hot-toast";
-import { addToCart } from "@/redux/slices/cartSlice";
+import { CartItem } from "@/redux/slices/cartSlice";
 import Footer from "@/components/Footer";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Product } from "@/types/product";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { CLOUDINARY_BASE } from "@/constants/config";
-import { openCart } from "@/redux/slices/uiSlice";
+import { addToCartHandler } from "@/utlls/addToCartHandler";
 
 const ProductDetailsPage = () => {
   const params = useParams();
   const id = params?.productId as string;
-  // TODO: Replace with API fetch
-  // const product = await fetch(`/api/products/${id}`).then((r) => r.json());
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -27,7 +24,6 @@ const ProductDetailsPage = () => {
     loop: true,
     align: "center",
   });
-  const router = useRouter();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState(0);
@@ -94,35 +90,14 @@ const ProductDetailsPage = () => {
     );
   }
 
-  const isInCart = cartItems.some(
-    (item: { id: string; size: string }) =>
+  const isInCart = cartItems?.some(
+    (item: CartItem) =>
       item.id === product.id &&
       item.size === product.variants[selectedVariant].size
   );
 
   const handleCartButtonClick = async () => {
-    if (isInCart) {
-      dispatch(openCart());
-
-      return;
-    }
-    try {
-      dispatch(
-        addToCart({
-          id: product.id,
-          name: product.name,
-          price: product.variants[0].price,
-          quantity: 1,
-          size: product.variants[0].size,
-          image: product.images[0],
-        })
-      );
-      toast.success(`Added to your cart !!`);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Failed to add item to cart. Please try again.");
-    } finally {
-    }
+    addToCartHandler(product, dispatch);
   };
 
   return (

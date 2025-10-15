@@ -16,6 +16,7 @@ import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { clearCart } from "@/redux/slices/cartSlice";
 
 const SECTIONS = [
   { key: "personal", label: "My Account", icon: <User size={20} /> },
@@ -50,6 +51,7 @@ export default function ProfilePage() {
 
   const handleLogOut = () => {
     dispatch(logout());
+    dispatch(clearCart());
     toast.success("Log out Successful ");
     router.push("/");
   };

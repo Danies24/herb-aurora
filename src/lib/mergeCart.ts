@@ -3,6 +3,8 @@ import { setCart } from "@/redux/slices/cartSlice";
 
 export async function syncCartAfterLogin(token: string) {
   const localCart = store.getState().cart.items;
+  if (!localCart?.length) return;
+
   const res = await fetch("/api/cart/merge", {
     method: "POST",
     headers: {

@@ -3,7 +3,7 @@ import { addToCart, setCart } from "@/redux/slices/cartSlice";
 import toast from "react-hot-toast";
 import { Product } from "@/types/product";
 import { handleClientError } from "./handleError";
-import { CartItemFromApi } from "./cartMapper";
+import { mapDBCartToReduxItems } from "./helper";
 
 export const addToCartHandler = async (
   product: Product,
@@ -39,16 +39,7 @@ export const addToCartHandler = async (
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to add to cart");
 
-    const transformed = data.cart.items.map((item: CartItemFromApi) => ({
-      id: item.product._id,
-      name: item.product.name,
-      price: item.priceAtAddTime,
-      quantity: item.quantity,
-      size: item.product.variants?.[0]?.size || "Standard",
-      image: item.product.images?.[0] || "",
-    }));
-
-    dispatch(setCart(transformed));
+    dispatch(setCart(mapDBCartToReduxItems(data.cart.items)));
     toast.success("Added to cart 🛍️");
   } catch (err: unknown) {
     handleClientError(err, "Failed to add cart !!");

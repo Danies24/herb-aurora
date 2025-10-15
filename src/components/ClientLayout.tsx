@@ -1,24 +1,28 @@
 "use client";
 
-import { Provider, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
-import { useEffect, useState } from "react";
 
 import { persistor, store } from "@/redux/store";
 import { queryClient } from "@/lib/reactQueryClient";
-import { hydrateFromLocalStorage } from "@/redux/slices/authSlice";
 
 import HamburgerMenu from "@/components/HamburgerMenu";
 import LoginModal from "@/components/LoginModal";
 import CartDrawer from "@/components/CartDrawer";
 import { PersistGate } from "redux-persist/integration/react";
+import { useFirebaseTokenSync } from "@/hooks/useFirebaseTokenSync";
 
 /**
  * This component runs once on app load.
  * It hydrates Redux auth state from localStorage.
  */
 function AppInitializer({ children }: { children: React.ReactNode }) {
+  const firebaseReady = useFirebaseTokenSync();
+
+  if (!firebaseReady) {
+    return null;
+  }
   return <>{children}</>;
 }
 
